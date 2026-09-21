@@ -1,7 +1,9 @@
 package com.voltplan.site;
 
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,16 @@ class SiteControllerTest {
             }
             """;
 
+    private static final String CORPS_INVALIDE = """
+            {
+              "code": "",
+              "nom": "Parc solaire Lyon",
+              "filiere": "SOLAIRE",
+              "region": "Auvergne-Rhône-Alpes",
+              "puissanceInstalleeMw": -5
+            }
+            """;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,9 +53,7 @@ class SiteControllerTest {
     @Test
     void get_retourne_le_site_en_json_quand_il_existe() throws Exception {
         // Given
-        Site site = new Site(7L, "PV-LYON-01", "Parc solaire Lyon", Filiere.SOLAIRE,
-                "Auvergne-Rhône-Alpes", new BigDecimal("12.5"));
-        when(service.trouverParId(7L)).thenReturn(site);
+        when(service.trouverParId(7L)).thenReturn(unSite(7L));
 
         // When / Then
         mockMvc.perform(get("/api/sites/7"))
@@ -65,11 +76,21 @@ class SiteControllerTest {
     }
 
     @Test
+    void get_liste_filtre_par_filiere() throws Exception {
+        // Given
+        when(service.lister(Filiere.SOLAIRE)).thenReturn(List.of(unSite(1L)));
+
+        // When / Then
+        mockMvc.perform(get("/api/sites").param("filiere", "SOLAIRE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].code").value("PV-LYON-01"));
+    }
+
+    @Test
     void post_cree_le_site_et_retourne_201_avec_son_emplacement() throws Exception {
         // Given
-        Site cree = new Site(1L, "PV-LYON-01", "Parc solaire Lyon", Filiere.SOLAIRE,
-                "Auvergne-Rhône-Alpes", new BigDecimal("12.5"));
-        when(service.creer(any(Site.class))).thenReturn(cree);
+        when(service.creer(any(Site.class))).thenReturn(unSite(1L));
 
         // When / Then
         mockMvc.perform(post("/api/sites")
@@ -93,5 +114,25 @@ class SiteControllerTest {
                         .content(CORPS_VALIDE))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("Un site avec le code 'PV-LYON-01' existe déjà"));
+    }
+
+    @Test
+    void post_retourne_400_avec_le_detail_des_champs_quand_le_corps_est_invalide() throws Exception {
+        // When / Then
+        mockMvc.perform(post("/api/sites")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CORPS_INVALIDE))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erreurs.code").exists())
+                .andExpect(jsonPath("$.erreurs.puissanceInstalleeMw").exists());
+
+        verifyNoInteractions(service);
+    }
+
+    // --- Méthode utilitaire de test ---
+
+    private Site unSite(Long id) {
+        return new Site(id, "PV-LYON-01", "Parc solaire Lyon", Filiere.SOLAIRE,
+                "Auvergne-Rhône-Alpes", new BigDecimal("12.5"));
     }
 }

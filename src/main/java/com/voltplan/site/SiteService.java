@@ -1,5 +1,7 @@
 package com.voltplan.site;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,5 +23,15 @@ public class SiteService {
     public Site trouverParId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new SiteIntrouvableException(id));
+    }
+
+    public List<Site> lister(Filiere filiere) {
+        List<Site> tous = repository.findAll();
+        if (filiere == null) {
+            return tous;
+        }
+        return tous.stream()
+                .filter(site -> site.filiere() == filiere)
+                .toList();
     }
 }

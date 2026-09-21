@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -78,11 +79,44 @@ class SiteServiceTest {
                 .hasMessageContaining("42");
     }
 
+    @Test
+    void lister_sans_filtre_retourne_tous_les_sites() {
+        // Given
+        Site solaire = avecId(siteSansId("PV-01"), 1L);
+        Site eolien = avecId(siteEolien("EOL-01"), 2L);
+        when(repository.findAll()).thenReturn(List.of(solaire, eolien));
+
+        // When
+        List<Site> resultat = service.lister(null);
+
+        // Then
+        assertThat(resultat).containsExactly(solaire, eolien);
+    }
+
+    @Test
+    void lister_avec_filtre_ne_retourne_que_la_filiere_demandee() {
+        // Given
+        Site solaire = avecId(siteSansId("PV-01"), 1L);
+        Site eolien = avecId(siteEolien("EOL-01"), 2L);
+        when(repository.findAll()).thenReturn(List.of(solaire, eolien));
+
+        // When
+        List<Site> resultat = service.lister(Filiere.SOLAIRE);
+
+        // Then
+        assertThat(resultat).containsExactly(solaire);
+    }
+
     // --- Méthodes utilitaires de test ---
 
     private Site siteSansId(String code) {
         return new Site(null, code, "Parc solaire", Filiere.SOLAIRE,
                 "Auvergne-Rhône-Alpes", new BigDecimal("12.5"));
+    }
+
+    private Site siteEolien(String code) {
+        return new Site(null, code, "Parc éolien", Filiere.EOLIEN,
+                "Bretagne", new BigDecimal("48.0"));
     }
 
     private Site avecId(Site site, Long id) {
