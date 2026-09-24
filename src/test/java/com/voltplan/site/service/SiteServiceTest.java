@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.voltplan.site.notification.NotificationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,6 +34,9 @@ class SiteServiceTest {
 
     @Mock
     private Predicate<BigDecimal> puissanceValide;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private SiteService service;
