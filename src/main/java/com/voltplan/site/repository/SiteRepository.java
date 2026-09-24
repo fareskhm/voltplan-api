@@ -1,6 +1,6 @@
-package com.voltplan.site;
+package com.voltplan.site.repository;
 
-import org.springframework.stereotype.Repository;
+import com.voltplan.site.Site;
 
 import java.util.List;
 import java.util.Optional;

@@ -3,14 +3,15 @@ package com.voltplan.web;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.voltplan.site.exeption.PuissanceInvalideException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.voltplan.site.SiteDejaExistantException;
-import com.voltplan.site.SiteIntrouvableException;
+import com.voltplan.site.exeption.SiteDejaExistantException;
+import com.voltplan.site.exeption.SiteIntrouvableException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -35,5 +36,10 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST, "Les données envoyées sont invalides");
         probleme.setProperty("erreurs", erreurs);
         return probleme;
+    }
+
+    @ExceptionHandler(PuissanceInvalideException.class)
+    public ProblemDetail puissanceInvalide(PuissanceInvalideException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 }

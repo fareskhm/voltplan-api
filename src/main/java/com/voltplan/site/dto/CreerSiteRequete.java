@@ -1,7 +1,9 @@
-package com.voltplan.site;
+package com.voltplan.site.dto;
 
 import java.math.BigDecimal;
 
+import com.voltplan.site.Filiere;
+import com.voltplan.site.Site;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

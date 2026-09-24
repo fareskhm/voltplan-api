@@ -1,9 +1,11 @@
-package com.voltplan.site;
+package com.voltplan.site.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 
+import com.voltplan.site.Filiere;
+import com.voltplan.site.Site;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
