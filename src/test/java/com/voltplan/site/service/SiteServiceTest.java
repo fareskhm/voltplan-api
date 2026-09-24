@@ -1,4 +1,4 @@
-package com.voltplan.site;
+package com.voltplan.site.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,11 +18,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.voltplan.site.Filiere;
+import com.voltplan.site.Site;
+import com.voltplan.site.exeption.PuissanceInvalideException;
+import com.voltplan.site.exeption.SiteDejaExistantException;
+import com.voltplan.site.exeption.SiteIntrouvableException;
+import com.voltplan.site.repository.SiteRepository;
+
 @ExtendWith(MockitoExtension.class)
 class SiteServiceTest {
 
     @Mock
     private SiteRepository repository;
+
+    @Mock
+    private Predicate<BigDecimal> puissanceValide;
 
     @InjectMocks
     private SiteService service;
@@ -31,6 +42,7 @@ class SiteServiceTest {
         // Given
         Site aCreer = siteSansId("PV-LYON-01");
         Site sauvegarde = avecId(aCreer, 1L);
+        when(puissanceValide.test(any(BigDecimal.class))).thenReturn(true);
         when(repository.save(aCreer)).thenReturn(sauvegarde);
 
         // When
@@ -51,6 +63,21 @@ class SiteServiceTest {
         assertThatThrownBy(() -> service.creer(doublon))
                 .isInstanceOf(SiteDejaExistantException.class)
                 .hasMessageContaining("PV-LYON-01");
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void creer_refuse_une_puissance_superieure_au_maximum() {
+        // Given
+        Site tropPuissant = new Site(null, "PV-LYON-02", "Parc solaire",
+                Filiere.SOLAIRE, "Auvergne-Rhône-Alpes", new BigDecimal("1000"));
+        when(repository.existsByCode("PV-LYON-02")).thenReturn(false);
+        when(puissanceValide.test(any(BigDecimal.class))).thenReturn(false);
+
+        // When / Then
+        assertThatThrownBy(() -> service.creer(tropPuissant))
+                .isInstanceOf(PuissanceInvalideException.class);
 
         verify(repository, never()).save(any());
     }

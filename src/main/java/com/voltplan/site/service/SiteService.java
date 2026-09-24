@@ -1,21 +1,33 @@
-package com.voltplan.site;
+package com.voltplan.site.service;
 
 import java.util.List;
+import java.util.function.Predicate;
 
+import com.voltplan.site.Filiere;
+import com.voltplan.site.Site;
+import com.voltplan.site.exeption.PuissanceInvalideException;
+import com.voltplan.site.exeption.SiteDejaExistantException;
+import com.voltplan.site.exeption.SiteIntrouvableException;
+import com.voltplan.site.repository.SiteRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SiteService {
 
     private final SiteRepository repository;
+    private final Predicate<java.math.BigDecimal> puissanceValide;
 
-    public SiteService(SiteRepository repository) {
+    public SiteService(SiteRepository repository, Predicate<java.math.BigDecimal> puissanceValide) {
         this.repository = repository;
+        this.puissanceValide = puissanceValide;
     }
 
     public Site creer(Site site) {
         if (repository.existsByCode(site.code())) {
             throw new SiteDejaExistantException(site.code());
+        }
+        if (!puissanceValide.test(site.puissanceInstalleeMw())) {
+            throw new PuissanceInvalideException(site.puissanceInstalleeMw());
         }
         return repository.save(site);
     }

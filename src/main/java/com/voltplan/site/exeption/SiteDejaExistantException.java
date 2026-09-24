@@ -1,4 +1,4 @@
-package com.voltplan.site;
+package com.voltplan.site.exeption;
 
 public class SiteDejaExistantException extends RuntimeException {
     public SiteDejaExistantException(String code) {

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: voltplan-api
+
+voltplan:
+  site:
+    puissance-max-mw: 100

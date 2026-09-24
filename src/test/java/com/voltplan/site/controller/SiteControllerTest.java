@@ -1,4 +1,4 @@
-package com.voltplan.site;
+package com.voltplan.site.controller;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
@@ -14,6 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.voltplan.site.Filiere;
+import com.voltplan.site.Site;
+import com.voltplan.site.exeption.SiteDejaExistantException;
+import com.voltplan.site.exeption.SiteIntrouvableException;
+import com.voltplan.site.service.SiteService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

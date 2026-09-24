@@ -1,4 +1,4 @@
-package com.voltplan.site;
+package com.voltplan.site.exeption;
 
 public class SiteIntrouvableException extends RuntimeException {
 
