@@ -27,6 +27,11 @@ public class InMemorySiteRepository implements SiteRepository {
 
     @Override
     public Optional<Site> findById(Long id) {
+        try {
+            Thread.sleep(2000);   // simule un aller-retour vers une vraie base
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         return Optional.ofNullable(stockage.get(id));
     }
 
