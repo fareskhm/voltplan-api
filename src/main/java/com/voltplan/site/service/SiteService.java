@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.voltplan.site.Filiere;
@@ -40,6 +41,7 @@ public class SiteService {
         return cree;
     }
 
+    @Cacheable(cacheNames = "sites", key = "#id")
     public Site trouverParId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new SiteIntrouvableException(id));
