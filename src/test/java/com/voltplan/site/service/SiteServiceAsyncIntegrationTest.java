@@ -1,24 +1,26 @@
 package com.voltplan.site.service;
 
-import com.voltplan.site.Filiere;
-import com.voltplan.site.Site;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
+import com.voltplan.site.Filiere;
+import com.voltplan.site.Site;
 
 @SpringBootTest
-public class SiteServiceAsyncIntegrationTest {
+class SiteServiceAsyncIntegrationTest {
 
     @Autowired
     private SiteService service;
 
-
     @Test
-    void creer_repond_sans_attendre_la_fin_de_la_notification(){
-        Site aCreer = new Site(null,"PV-ASYNC-01","Parc test async",
+    void creer_repond_sans_attendre_la_fin_de_la_notification() {
+        String codeUnique = "PV-ASYNC-" + System.currentTimeMillis();
+        Site aCreer = new Site(null, codeUnique, "Parc test async",
                 Filiere.SOLAIRE, "Bretagne", new BigDecimal("10"));
 
         long debut = System.currentTimeMillis();

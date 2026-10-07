@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-ajout-derniere-visite
+      author: fares
+      changes:
+        - addColumn:
+            tableName: site
+            columns:
+              - column:
+                  name: derniere_visite
+                  type: date

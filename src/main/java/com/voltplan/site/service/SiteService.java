@@ -14,6 +14,7 @@ import com.voltplan.site.exeption.SiteDejaExistantException;
 import com.voltplan.site.exeption.SiteIntrouvableException;
 import com.voltplan.site.notification.NotificationService;
 import com.voltplan.site.repository.SiteRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SiteService {
@@ -29,6 +30,7 @@ public class SiteService {
         this.notificationService = notificationService;
     }
 
+    @Transactional
     public Site creer(Site site) {
         if (repository.existsByCode(site.code())) {
             throw new SiteDejaExistantException(site.code());
