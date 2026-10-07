@@ -19,7 +19,8 @@ class SiteServiceCacheIntegrationTest {
 
     @Test
     void trouverParId_est_plus_rapide_au_deuxieme_appel() {
-        Site cree = service.creer(new Site(null, "PV-CACHE-01", "Parc test cache",
+        String codeUnique = "PV-CACHE-" + System.currentTimeMillis();
+        Site cree = service.creer(new Site(null, codeUnique, "Parc test cache",
                 Filiere.SOLAIRE, "Bretagne", new BigDecimal("10")));
 
         long debut1 = System.currentTimeMillis();
@@ -29,9 +30,6 @@ class SiteServiceCacheIntegrationTest {
         long debut2 = System.currentTimeMillis();
         service.trouverParId(cree.id());
         long deuxiemeAppel = System.currentTimeMillis() - debut2;
-
-        System.out.println("Premier appel : " + premierAppel + " ms");
-        System.out.println("Deuxième appel : " + deuxiemeAppel + " ms");
 
         assertThat(deuxiemeAppel).isLessThan(100);
     }

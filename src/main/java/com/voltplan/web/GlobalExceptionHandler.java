@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.voltplan.site.exeption.PuissanceInvalideException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,5 +42,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PuissanceInvalideException.class)
     public ProblemDetail puissanceInvalide(PuissanceInvalideException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail contrainteViolee(DataIntegrityViolationException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Un site avec ce code existe déjà");
     }
 }
